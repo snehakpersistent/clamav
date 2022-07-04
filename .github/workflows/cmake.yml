@@ -8,6 +8,7 @@ on:
       - rel/*
       - dev/*
       - main
+      - ppc-support
   pull_request:
     branches:
       - rel/*
@@ -133,7 +134,7 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: ctest -C ${{ env.BUILD_TYPE }} -V
 
-  build-ubuntu:
+  build-ubuntu-x86:
     runs-on: ubuntu-latest
 
     steps:
@@ -176,6 +177,70 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: cmake --build . --config ${{ env.BUILD_TYPE }}
+
+      - name: Test
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        # Execute tests defined by the CMake configuration.
+        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+        run: ctest -C ${{ env.BUILD_TYPE }} -V
+
+  build-ubuntu-ppc64le:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Update package listings
+        run: sudo apt-get update
+      
+      - name: Check distribution
+        run: sudo lsb_release -a
+
+      - name: Install Build Tools
+        run: sudo apt-get install -y bison flex valgrind
+        
+      - name: Install Advance toolchain
+        run: |
+          sudo wget https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu/dists/bionic/6976a827.gpg.key
+          sudo apt-key add 6976a827.gpg.key
+          sudo echo "deb https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu bionic at15.0" >> /etc/apt/sources.list
+          sudo apt-get update -y
+          sudo apt-get install advance-toolchain-at15.0-cross-ppc64le -y
+          
+
+      - name: Install Dependencies
+        run: sudo apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libssl-dev libxml2-dev zlib1g-dev
+
+      - name: Install pytest for easier to read test results
+        run: python3 -m pip install pytest
+
+      - uses: lukka/get-cmake@v3.21.2
+
+      - name: Create Build Directory
+        shell: bash
+        # Some projects don't allow in-source building, so create a separate build directory
+        # We'll use this as our working directory for all subsequent commands
+        run: cmake -E make_directory ${{runner.workspace}}/build 
+
+      - name: Configure CMake
+        # Use a bash shell so we can use the same syntax for environment variable
+        # access regardless of the host operating system
+        working-directory: ${{runner.workspace}}/build
+        # Note the current convention is to use the -S and -B options here to specify source
+        # and build directories, but this is only available with CMake 3.13 and higher.
+        # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+        run:
+          cmake ${{runner.workspace}}/clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DENABLE_STATIC_LIB=ON
+          -DENABLE_EXAMPLES=ON
+          -A ppc64le -DCMAKE_TOOLCHAIN_FILE=crosscompile.cmake
+
+      - name: Build
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        # Execute the build.  You can specify a specific target with "--target <NAME>"
+        run: cmake --build . --config ${{ env.BUILD_TYPE }} -A ppc64le -DCMAKE_TOOLCHAIN_FILE=crosscompile.cmake
 
       - name: Test
         shell: bash
