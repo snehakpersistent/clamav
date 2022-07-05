@@ -204,7 +204,8 @@ jobs:
         run: |
           sudo wget https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu/dists/bionic/6976a827.gpg.key
           sudo apt-key add 6976a827.gpg.key
-          sudo echo "deb https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu bionic at15.0" >> /etc/apt/sources.list
+          sudo touch /etc/apt/sources.list.d/add_sources.list
+          echo 'deb https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu bionic at15.0' | sudo tee -a /etc/apt/sources.list.d/add_sources.list
           sudo apt-get update -y
           sudo apt-get install advance-toolchain-at15.0-cross-ppc64le -y
           
