@@ -193,19 +193,16 @@ jobs:
 
       - name: Update package listings
         run: sudo apt-get update
-      
-      - name: Check distribution
-        run: sudo lsb_release -a
 
       - name: Install Build Tools
         run: sudo apt-get install -y bison flex valgrind
         
       - name: Install Advance toolchain
         run: |
-          sudo wget https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu/dists/bionic/6976a827.gpg.key
+          sudo wget https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu/dists/focal/6976a827.gpg.key
           sudo apt-key add 6976a827.gpg.key
           sudo touch /etc/apt/sources.list.d/add_sources.list
-          echo 'deb https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu bionic at15.0' | sudo tee -a /etc/apt/sources.list.d/add_sources.list
+          echo 'deb https://public.dhe.ibm.com/software/server/POWER/Linux/toolchain/at/ubuntu focal at15.0' | sudo tee -a /etc/apt/sources.list.d/add_sources.list
           sudo apt-get update -y
           sudo apt-get install advance-toolchain-at15.0-cross-ppc64le -y
           
