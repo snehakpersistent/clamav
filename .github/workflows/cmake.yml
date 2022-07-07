@@ -121,6 +121,7 @@ jobs:
           sudo tar -xvzf v1.2.10.tar.gz && cd zlib-1.2.10
           sudo CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ ./configure --prefix=/opt/at15.0/ppc64le/
           sudo make install DESTDIR=/opt/at15.0/ppc64le/ CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ LD=/opt/at15.0/bin/powerpc64le-linux-gnu-ld
+          find /opt/at15.0/ -name libz*
 
       - name: Create Build Directory
         shell: bash
