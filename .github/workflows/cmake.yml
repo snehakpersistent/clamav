@@ -122,6 +122,8 @@ jobs:
           sudo CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ ./configure --prefix=/opt/at15.0/ppc64le/
           sudo make install DESTDIR=/opt/at15.0/ppc64le/ CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ LD=/opt/at15.0/bin/powerpc64le-linux-gnu-ld
           sudo find /opt/at15.0/ -name "libz*"
+          sudo file /opt/at15.0/ppc64le/opt/at15.0/ppc64le/lib/libz.so.1.2.10
+          sudo whereis libz
 
       - name: Create Build Directory
         shell: bash
