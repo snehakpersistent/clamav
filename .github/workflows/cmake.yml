@@ -119,7 +119,7 @@ jobs:
           #Install zlib
           sudo wget https://github.com/madler/zlib/archive/refs/tags/v1.2.10.tar.gz
           sudo tar -xvzf v1.2.10.tar.gz && cd zlib-1.2.10
-          sudo CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ ./configure --prefix=/opt/at15.0/ppc64le/
+          sudo CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ ./configure --prefix=/opt/at15.0/ppc64le/ --static
           sudo make install DESTDIR=/opt/at15.0/ppc64le/ CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ LD=/opt/at15.0/bin/powerpc64le-linux-gnu-ld
           sudo find /opt/at15.0/ -name "libz*"
           sudo file /opt/at15.0/ppc64le/opt/at15.0/ppc64le/lib/libz.so.1.2.10
@@ -145,6 +145,8 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=crosscompile.cmake
           -DCMAKE_PREFIX_PATH=/opt/at15.0/
           -DCMAKE_SYSROOT=/opt/at15.0/ppc64le/
+          -DZLIB_INCLUDE_DIR=$HOME/zlib-1.2.10/
+          -DZLIB_LIBRARY=/opt/at15.0/ppc64le/opt/at15.0/ppc64le/lib/libz.so.1.2.10
 
       - name: Build
         shell: bash
