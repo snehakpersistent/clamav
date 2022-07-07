@@ -119,7 +119,7 @@ jobs:
           #Install zlib
           sudo wget https://github.com/madler/zlib/archive/refs/tags/v1.2.10.tar.gz
           sudo tar -xvzf v1.2.10.tar.gz && cd zlib-1.2.10
-          sudo ./configure --prefix=/opt/at15.0/ppc64le/
+          sudo CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ ./configure --prefix=/opt/at15.0/ppc64le/
           sudo make install DESTDIR=/opt/at15.0/ppc64le/ CC=/opt/at15.0/bin/powerpc64le-linux-gnu-gcc CXX=/opt/at15.0/bin/powerpc64le-linux-gnu-g++ LD=/opt/at15.0/bin/powerpc64le-linux-gnu-ld
 
       - name: Create Build Directory
