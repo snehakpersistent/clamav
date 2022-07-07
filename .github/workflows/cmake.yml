@@ -145,8 +145,8 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=crosscompile.cmake
           -DCMAKE_PREFIX_PATH=/opt/at15.0/
           -DCMAKE_SYSROOT=/opt/at15.0/ppc64le/
-          -DZLIB_INCLUDE_DIR=$HOME/zlib-1.2.10/
-          -DZLIB_LIBRARY=/opt/at15.0/ppc64le/opt/at15.0/ppc64le/lib/libz.so.1.2.10
+          #-DZLIB_INCLUDE_DIR=$HOME/zlib-1.2.10/
+          #-DZLIB_LIBRARY=/opt/at15.0/ppc64le/opt/at15.0/ppc64le/lib/libz.so.1.2.10
 
       - name: Build
         shell: bash
