@@ -106,9 +106,7 @@ jobs:
             
             #Configure CMake
             cd ${{runner.workspace}}/build
-            cmake ${{runner.workspace}}/clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-            -DENABLE_STATIC_LIB=ON
-            -DENABLE_EXAMPLES=ON
+            cmake ${{runner.workspace}}/clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DENABLE_STATIC_LIB=ON -DENABLE_EXAMPLES=ON
             
             #Build
             cmake --build . --config ${{ env.BUILD_TYPE }}
