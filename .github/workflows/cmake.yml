@@ -76,52 +76,41 @@ jobs:
 
   build-ubuntu-ppc64le:
     runs-on: ubuntu-latest
-    container: ppc64le/ubuntu
 
     steps:
       - uses: actions/checkout@v1
-
-      - name: Update package listings
-        run: sudo apt-get update
-
-      - name: Install Build Tools
-        run: sudo apt-get install -y bison flex valgrind       
-
-      - name: Install Dependencies
-        run: sudo apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libssl-dev libxml2-dev
-
-      - name: Install pytest for easier to read test results
-        run: python3 -m pip install pytest
-
-      - uses: lukka/get-cmake@v3.21.2      
       
-      - name: Create Build Directory
-        shell: bash
-        # Some projects don't allow in-source building, so create a separate build directory
-        # We'll use this as our working directory for all subsequent commands
-        run: cmake -E make_directory ${{runner.workspace}}/build 
-
-      - name: Configure CMake
-        # Use a bash shell so we can use the same syntax for environment variable
-        # access regardless of the host operating system
-        working-directory: ${{runner.workspace}}/build
-        # Note the current convention is to use the -S and -B options here to specify source
-        # and build directories, but this is only available with CMake 3.13 and higher.
-        # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-        run:
-          cmake ${{runner.workspace}}/clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          -DENABLE_STATIC_LIB=ON
-          -DENABLE_EXAMPLES=ON
-
-      - name: Build
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        # Execute the build.  You can specify a specific target with "--target <NAME>"
-        run: cmake --build . --config ${{ env.BUILD_TYPE }}
-
-      - name: Test
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-        run: ctest -C ${{ env.BUILD_TYPE }} -V
+      - uses: uraimo/run-on-arch-action@v2.1.1
+        name: Install dependencies and build ClamAV
+        id: build
+        with:
+          arch: ppc64le
+          distro: ubuntu20.04
+            
+          run: |
+            #Update package listings
+            apt-get update -y
+            
+            #Install Build Tools
+            apt-get install -y bison flex valgrind
+            
+            #Install Dependencies
+            apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libssl-dev libxml2-dev python3 python3-pip cmake git curl
+            
+            #Install pytest for easier to read test results
+            python3 -m pip install pytest
+            
+            #Create Build Directory
+            cmake -E make_directory ${{runner.workspace}}/build
+            
+            #Configure CMake
+            cd ${{runner.workspace}}/build
+            cmake ${{runner.workspace}}/clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            -DENABLE_STATIC_LIB=ON
+            -DENABLE_EXAMPLES=ON
+            
+            #Build
+            cmake --build . --config ${{ env.BUILD_TYPE }}
+            
+            #Test
+            ctest -C ${{ env.BUILD_TYPE }} -V
