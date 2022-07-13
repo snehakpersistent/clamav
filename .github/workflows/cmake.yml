@@ -90,7 +90,7 @@ jobs:
         run: cmake -E make_directory ${{runner.workspace}}/build
       
       - name: Start ppc64le container
-        run: sudo docker run -v ${{runner.workspace}}:${{runner.workspace}} -it ppc64le/ubuntu bash
+        run: sudo docker run -v ${{runner.workspace}}:${{runner.workspace}} -t ppc64le/ubuntu bash
         
       - name: Update package listings
         run: sudo apt-get update
