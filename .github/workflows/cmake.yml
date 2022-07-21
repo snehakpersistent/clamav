@@ -88,13 +88,15 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
+          USER: ${{ secrets.PPC64LE_USER }}
         with:
           host: ${{ secrets.PPC64LE_IP }}
           username: ${{ secrets.PPC64LE_USER }}
           key: ${{ secrets.PPC64LE_KEY }}
-          envs: BUILD_TYPE
+          envs: BUILD_TYPE,USER
           script: |
             #Clone ClamAV source code
+            sudo rm -rf  /home/$USER/clamav
             sudo git clone https://github.com/snehakpersistent/clamav.git && cd clamav
             sudo git checkout ppc-support
             
