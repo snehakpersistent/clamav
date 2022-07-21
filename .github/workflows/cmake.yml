@@ -84,7 +84,7 @@ jobs:
         run: |
           ssh-keyscan ${{ secrets.PPC64LE_IP }}  >> ~/.ssh/known_hosts # Add live server IP to known hosts.
 
-      - name: executing remote ssh commands using password
+      - name: Compile and test ClamAV natively on ppc64le
         uses: appleboy/ssh-action@master
         env:
           BUILD_TYPE: ${{ env.BUILD_TYPE }}
@@ -95,31 +95,31 @@ jobs:
           envs: BUILD_TYPE
           script: |
             #Clone ClamAV source code
-            git clone https://github.com/snehakpersistent/clamav.git && cd clamav
-            git checkout ppc-support
+            sudo git clone https://github.com/snehakpersistent/clamav.git && cd clamav
+            sudo git checkout ppc-support
             
             #Update package listings
-            apt-get update -y
+            sudo apt-get update -y
             
             #Install Build Tools
-            apt-get install -y bison flex valgrind
+            sudo apt-get install -y bison flex valgrind
             
             #Install Dependencies
-            apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libpcre2-dev libssl-dev libxml2-dev python3 python3-pip cmake git curl
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            sudo apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libpcre2-dev libssl-dev libxml2-dev python3 python3-pip cmake git curl
+            sudo curl https://sh.rustup.rs -sSf | sh -s -- -y
             
             #Install pytest for easier to read test results
-            python3 -m pip install pytest
+            sudo python3 -m pip install pytest
             
             #Create Build Directory           
-            cmake -E make_directory build
+            sudo cmake -E make_directory build
             
             #Configure CMake
             cd build
-            cmake clamav -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DENABLE_STATIC_LIB=ON -DENABLE_EXAMPLES=ON
+            sudo cmake clamav -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DENABLE_STATIC_LIB=ON -DENABLE_EXAMPLES=ON
             
             #Build
-            cmake --build . --config $BUILD_TYPE
+            sudo cmake --build . --config $BUILD_TYPE
             
             #Test
-            ctest -C $BUILD_TYPE -V
+            sudo ctest -C $BUILD_TYPE -V
