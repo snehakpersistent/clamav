@@ -84,39 +84,42 @@ jobs:
         run: |
           ssh-keyscan ${{ secrets.PPC64LE_IP }}  >> ~/.ssh/known_hosts # Add live server IP to known hosts.
 
-      - name: Compile and test ClamAV on ppc64le
-        run: |
-          echo -e "Display the bastion machine architecture\n" 
-          arch
-          echo -e "SSH into the Power machine and execute the script\n"
-          ssh ${{ secrets.PPC64LE_USER }}@${{ secrets.PPC64LE_IP }}
-          
-          #Clone ClamAV source code
-          git clone https://github.com/snehakpersistent/clamav.git && cd clamav
-          git checkout ppc-support
-          
-          #Update package listings
-          apt-get update -y
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        env:
+          BUILD_TYPE: ${{ env.BUILD_TYPE }}
+        with:
+          host: ${{ secrets.PPC64LE_IP }}
+          username: ${{ secrets.PPC64LE_USER }}
+          key_path: ${{ secrets.PPC64LE_KEY }}
+          envs: BUILD_TYPE
+          script: |
+            #Clone ClamAV source code
+            git clone https://github.com/snehakpersistent/clamav.git && cd clamav
+            git checkout ppc-support
             
-          #Install Build Tools
-          apt-get install -y bison flex valgrind
+            #Update package listings
+            apt-get update -y
             
-          #Install Dependencies
-          apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libpcre2-dev libssl-dev libxml2-dev python3 python3-pip cmake git curl 
-          curl https://sh.rustup.rs -sSf | sh -s -- -y
+            #Install Build Tools
+            apt-get install -y bison flex valgrind
             
-          #Install pytest for easier to read test results
-          python3 -m pip install pytest
+            #Install Dependencies
+            apt-get install -y check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev libncurses5-dev libpcre3-dev libpcre2-dev libssl-dev libxml2-dev python3 python3-pip cmake git curl
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
             
-          #Create Build Directory
-          cmake -E make_directory build
+            #Install pytest for easier to read test results
+            python3 -m pip install pytest
             
-          #Configure CMake
-          cd build
-          cmake clamav -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DENABLE_STATIC_LIB=ON -DENABLE_EXAMPLES=ON
+            #Create Build Directory           
+            cmake -E make_directory build
             
-          #Build
-          cmake --build . --config ${{ env.BUILD_TYPE }}
+            #Configure CMake
+            cd build
+            cmake clamav -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DENABLE_STATIC_LIB=ON -DENABLE_EXAMPLES=ON
             
-          #Test
-          ctest -C ${{ env.BUILD_TYPE }} -V
+            #Build
+            cmake --build . --config $BUILD_TYPE
+            
+            #Test
+            ctest -C $BUILD_TYPE -V
