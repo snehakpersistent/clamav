@@ -91,7 +91,7 @@ jobs:
         with:
           host: ${{ secrets.PPC64LE_IP }}
           username: ${{ secrets.PPC64LE_USER }}
-          key_path: ${{ secrets.PPC64LE_KEY }}
+          key: ${{ secrets.PPC64LE_KEY }}
           envs: BUILD_TYPE
           script: |
             #Clone ClamAV source code
